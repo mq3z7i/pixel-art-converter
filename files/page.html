@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #1e1e2f, #12121d);
+        color: #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      }
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 400px;
+        background: rgba(255,255,255,0.05);
+        padding: 1rem 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        backdrop-filter: blur(8px);
+      }
+      label {
+        background: linear-gradient(135deg, #3a3a4d, #1f1f2d);
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.2s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      }
+      label:hover {
+        background: linear-gradient(135deg, #505066, #2c2c3c);
+        transform: translateY(-2px);
+      }
+      input[type="file"] { display: none; }
+
+      .slider-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 12px;
+        border-radius: 6px;
+        background: linear-gradient(90deg, #ff6f61, #ff4a3d);
+        outline: none;
+        transition: background 0.3s;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        border: 2px solid #ff6f61;
+        transition: all 0.2s;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        cursor: pointer;
+        border: 2px solid #ff6f61;
+      }
+
+      button {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(135deg, #ff6f61, #ff4a3d);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+        transition: all 0.2s;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      }
+
+      canvas {
+        margin-top: 2rem;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 16px;
+        border: 2px solid rgba(255,255,255,0.1);
+        image-rendering: pixelated;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      }
+
+      .footer {
+        margin-top: 2rem;
+        font-size: 0.8rem;
+        color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pixel Art Converter</h1>
+
+    <div class="controls">
+      <label for="fileInput">Upload Image</label>
+      <input type="file" id="fileInput" accept="image/*">
+
+      <div class="slider-container">
+        <span>Pixel Size</span>
+        <input type="range" id="pixelSlider" min="1" max="50" value="10">
+      </div>
+
+      <button id="downloadBtn">Download Pixel Art</button>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+      const fileInput = document.getElementById('fileInput');
+      const pixelSlider = document.getElementById('pixelSlider');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      let img = null;
+
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        img = new Image();
+        img.onload = () => drawPixelArt();
+        img.src = URL.createObjectURL(file);
+      });
+
+      pixelSlider.addEventListener('input', () => {
+        if (img) drawPixelArt();
+      });
+
+      function drawPixelArt() {
+        const pixelSize = parseInt(pixelSlider.value);
+        const scaleX = Math.ceil(img.width / pixelSize);
+        const scaleY = Math.ceil(img.height / pixelSize);
+
+        canvas.width = scaleX * pixelSize;
+        canvas.height = scaleY * pixelSize;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = scaleX;
+        tempCanvas.height = scaleY;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.imageSmoothingEnabled = false;
+        tempCtx.drawImage(img, 0, 0, scaleX, scaleY);
+
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+      }
+
+      downloadBtn.addEventListener('click', () => {
+        if (!img) return;
+        const link = document.createElement('a');
+        link.download = 'pixel-art.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    </script>
+  </body>
+  </html>
