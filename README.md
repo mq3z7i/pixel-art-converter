@@ -56,4 +56,4 @@ This project is licensed under the MIT License.
 
 ---
 
-Made with ❤️ by **[Martim/@Mq3z7i](mq3z7i.com)**
+Made with ❤️ by **[Martim/@Mq3z7i](https://mq3z7i.com)**
