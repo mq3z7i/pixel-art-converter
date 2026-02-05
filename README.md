@@ -33,6 +33,7 @@ You can try it directly in your browser by opening the `index.html` file.
 ## Screenshot
 
 <img width="650" height="773" alt="Screenshot" src="https://github.com/user-attachments/assets/c1828633-3da6-4c85-8ffc-eeac5e546877" />
+Try it yourself [here](https://pac.webprojects.mq3z7i.com)
 
 ---
 
