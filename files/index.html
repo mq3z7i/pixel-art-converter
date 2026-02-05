@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  return new Response(`
+  <!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -136,6 +142,7 @@
     </div>
 
     <canvas id="canvas"></canvas>
+    <div class="footer">github.com/mq3z7i</div>
 
     <script>
       const fileInput = document.getElementById('fileInput');
@@ -188,3 +195,7 @@
     </script>
   </body>
   </html>
+  `, {
+    headers: { 'Content-Type': 'text/html;charset=UTF-8' },
+  })
+}
